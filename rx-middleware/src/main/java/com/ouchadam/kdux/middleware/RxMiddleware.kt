@@ -1,9 +1,6 @@
 package com.ouchadam.kdux.middleware
 
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Scheduler
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.*
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -31,6 +28,15 @@ fun <State, Input, Output> rxMiddleware(
 }
 
 fun <T> Observable<T>.toKdux() = object: KduxSource<T> {
+    override fun subscribe(ioScheduler: Scheduler, reducerScheduler: Scheduler, consumer: (T) -> Unit): KduxDisposable {
+        return this@toKdux.subscribeOn(ioScheduler)
+            .observeOn(reducerScheduler)
+            .subscribe(consumer)
+            .toKdux()
+    }
+}
+
+fun <T> Maybe<T>.toKdux() = object: KduxSource<T> {
     override fun subscribe(ioScheduler: Scheduler, reducerScheduler: Scheduler, consumer: (T) -> Unit): KduxDisposable {
         return this@toKdux.subscribeOn(ioScheduler)
             .observeOn(reducerScheduler)

@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="kdux.coroutines-middleware" target="1.7" />
       <module name="kdux.lib" target="1.7" />
       <module name="kdux.rx-middleware" target="1.7" />
       <module name="kdux.sample" target="1.8" />

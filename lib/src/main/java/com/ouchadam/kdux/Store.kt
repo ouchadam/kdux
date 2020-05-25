@@ -6,7 +6,7 @@ typealias Reducer<State, Action> = (Action, currentState: State?) -> State
 
 typealias ReadState<State> = () -> State
 typealias Dispatch<Action> = (Action) -> Unit
-typealias Middleware<State, Input, Output> = (Input, ReadState<State?>) -> (Dispatch<Output>) -> KduxDisposable
+typealias Middleware<State, Input, Output> =  (Input, ReadState<State?>) -> (Dispatch<Output>) -> KduxDisposable
 
 val SYNC_MIDDLEWARE: KduxDisposable = {}
 
@@ -74,6 +74,14 @@ class Store<State, Action, TAction> private constructor(
     }
 }
 
+fun <State, Input, Output> syncMiddleware(provider: (Input, ReadState<State?>) -> Output): Middleware<State, Input, Output> {
+    return { input, readState ->
+        { dispatch ->
+            dispatch(provider(input, readState))
+            SYNC_MIDDLEWARE
+        }
+    }
+}
 
 fun <S, M1I, M1O, M2O> combineMiddleware(
     m1: Middleware<S, M1I, M1O>,
@@ -91,3 +99,12 @@ fun <S, M1I, M1O, M2O> combineMiddleware(
 }
 
 class StateHolder<State>(var state: State? = null)
+
+fun<State, Input> loggerMiddleware(log: (String) -> Unit) = { input: Input, readState: ReadState<State?> ->
+    { dispatch: Dispatch<Input> ->
+        log("current state ${readState()}")
+        dispatch(input)
+        log("next state ${readState()}")
+        SYNC_MIDDLEWARE
+    }
+}
