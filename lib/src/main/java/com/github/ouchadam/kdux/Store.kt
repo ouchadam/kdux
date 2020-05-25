@@ -1,9 +1,9 @@
-package com.ouchadam.kdux
+package com.github.ouchadam.kdux
 
-import com.ouchadam.kdux.common.CompositeKduxDisposable
-import com.ouchadam.kdux.common.KduxDisposable
-import com.ouchadam.kdux.common.Middleware
-import com.ouchadam.kdux.common.plusAssign
+import com.github.ouchadam.kdux.common.CompositeKduxDisposable
+import com.github.ouchadam.kdux.common.KduxDisposable
+import com.github.ouchadam.kdux.common.Middleware
+import com.github.ouchadam.kdux.common.plusAssign
 
 typealias Observer<State> = (State) -> Unit
 typealias Reducer<State, Action> = (Action, currentState: State?) -> State
@@ -91,7 +91,8 @@ fun <S, M1I, M1O, M2O> combineMiddleware(
     m2: Middleware<S, M1O, M2O>
 ): Middleware<S, M1I, M2O> = { input, readState ->
     { dispatch ->
-        val disposables = CompositeKduxDisposable()
+        val disposables =
+            CompositeKduxDisposable()
         disposables += m1(input, readState).invoke { result ->
             disposables += m2(result, readState).invoke { result ->
                 dispatch(result)

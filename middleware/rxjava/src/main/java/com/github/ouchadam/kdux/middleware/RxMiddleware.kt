@@ -1,8 +1,8 @@
-package com.ouchadam.kdux.middleware
+package com.github.ouchadam.kdux.middleware
 
-import com.ouchadam.kdux.common.KduxDisposable
-import com.ouchadam.kdux.common.Middleware
-import com.ouchadam.kdux.common.ReadState
+import com.github.ouchadam.kdux.common.KduxDisposable
+import com.github.ouchadam.kdux.common.Middleware
+import com.github.ouchadam.kdux.common.ReadState
 import io.reactivex.rxjava3.core.*
 import io.reactivex.rxjava3.disposables.Disposable
 

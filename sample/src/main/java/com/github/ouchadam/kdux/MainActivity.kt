@@ -1,12 +1,10 @@
-package com.ouchadam.kdux.sample
+package com.github.ouchadam.kdux
 
 import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.memrise.android.sample.R
-import com.ouchadam.kdux.*
-import com.ouchadam.middleware.coroutineMiddleware
+import com.github.ouchadam.kdux.middleware.coroutineMiddleware
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay

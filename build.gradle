@@ -22,7 +22,6 @@ task clean(type: Delete) {
 }
 
 ext.applyLibraryModule = { project ->
-  println(project.plugins)
   project.apply plugin: 'java-library'
   project.apply plugin: 'kotlin'
 
@@ -33,5 +32,17 @@ ext.applyLibraryModule = { project ->
 
   project.dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  }
+}
+
+ext.applyBintrayRelease = { artifactName, project ->
+  project.apply plugin: 'com.novoda.bintray-release'
+  project.publish {
+    userOrg = 'ouchadam'
+    groupId = 'com.github.ouchadam'
+    artifactId = artifactName
+    publishVersion = "$System.env.CIRCLE_BUILD_NUM"
+    desc = 'Kotlin redux implementation'
+    website = 'https://github.com/ouchadam/kdux'
   }
 }

@@ -1,4 +1,4 @@
-package com.ouchadam.kdux.common
+package com.github.ouchadam.kdux.common
 
 typealias ReadState<State> = () -> State
 typealias Dispatch<Action> = (Action) -> Unit
