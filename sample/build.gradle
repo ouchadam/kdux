@@ -25,7 +25,6 @@ android {
 
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation 'androidx.appcompat:appcompat:1.1.0'
   implementation project(":lib")
   implementation project(":rx-middleware")
   implementation project(":coroutines-middleware")
