@@ -77,12 +77,28 @@ val middleware = rxMiddleware(
 val store = Store.create(reducer, middleware)
 ```
 
+##### coroutines-middleware
+
+```kotlin
+private suspend fun backgroundWork() = withContext(Dispatchers.IO) { "async-result" }
+
+val factory = { readState: ReadState<String?>, action: String ->
+    when (action) {
+        "ACTION_START" -> suspend { backgroundWork() }
+        else -> suspend { throw IllegalStateException() }
+    }
+}
+
+val middleware = coroutineMiddleware(factory, scope = GlobalScope)
+
+val store = Store.create(reducer, middleware)
+```
 
 #### Clean up
 
 `store.post(action)` returns a `KduxDisposable` which can be invoked in order to clean up references/resources
 
-```
+```kotlin
 val disposables = CompositeKduxDisposable()
 disposables += store.post("ACTION")
 dispables.clear()
