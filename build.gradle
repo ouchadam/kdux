@@ -1,0 +1,51 @@
+buildscript {
+  ext.kotlin_version = "1.3.61"
+  repositories {
+    google()
+    jcenter()
+  }
+  dependencies {
+    classpath "com.android.tools.build:gradle:4.1.0-alpha09"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    classpath 'com.novoda:bintray-release:0.9'
+  }
+}
+
+allprojects {
+  repositories {
+    google()
+    jcenter()
+  }
+}
+
+task clean(type: Delete) {
+  delete rootProject.buildDir
+}
+
+ext.applyLibraryModule = { project, artifactName ->
+  project.apply plugin: 'java-library'
+  project.apply plugin: 'kotlin'
+
+  applyBintrayRelease(project, artifactName)
+
+  project.java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+  }
+
+  project.dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  }
+}
+
+ext.applyBintrayRelease = { project, artifactName ->
+  project.apply plugin: 'com.novoda.bintray-release'
+  project.publish {
+    userOrg = 'ouchadam'
+    groupId = 'com.github.ouchadam'
+    artifactId = artifactName
+    publishVersion = "$System.env.CIRCLE_BUILD_NUM"
+    desc = 'Kotlin redux implementation'
+    website = 'https://github.com/ouchadam/kdux'
+  }
+}

@@ -1,0 +1,6 @@
+applyLibraryModule(project, 'kdux-middleware-coroutines')
+
+dependencies {
+    implementation project(":common")
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7"
+}

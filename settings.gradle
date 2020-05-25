@@ -1,0 +1,10 @@
+include ':coroutines-middleware'
+project(':coroutines-middleware').projectDir = new File('middleware/coroutines')
+include ':rx-middleware'
+project(':rx-middleware').projectDir = new File('middleware/rxjava')
+
+include ':common'
+include ':lib'
+include ':sample'
+
+rootProject.name = "kdux"

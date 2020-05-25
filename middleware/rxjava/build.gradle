@@ -1,0 +1,6 @@
+applyLibraryModule(project, 'kdux-middleware-rxjava-3')
+
+dependencies {
+    implementation project(":common")
+    implementation "io.reactivex.rxjava3:rxjava:3.0.4"
+}
