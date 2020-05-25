@@ -1,12 +1,15 @@
 package com.ouchadam.kdux
 
+import com.ouchadam.kdux.common.CompositeKduxDisposable
+import com.ouchadam.kdux.common.KduxDisposable
+import com.ouchadam.kdux.common.Middleware
+import com.ouchadam.kdux.common.plusAssign
+
 typealias Observer<State> = (State) -> Unit
-typealias KduxDisposable = () -> Unit
 typealias Reducer<State, Action> = (Action, currentState: State?) -> State
 
 typealias ReadState<State> = () -> State
 typealias Dispatch<Action> = (Action) -> Unit
-typealias Middleware<State, Input, Output> =  (Input, ReadState<State?>) -> (Dispatch<Output>) -> KduxDisposable
 
 val SYNC_MIDDLEWARE: KduxDisposable = {}
 

@@ -1,13 +1,10 @@
 package com.ouchadam.kdux.middleware
 
+import com.ouchadam.kdux.common.KduxDisposable
+import com.ouchadam.kdux.common.Middleware
+import com.ouchadam.kdux.common.ReadState
 import io.reactivex.rxjava3.core.*
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
-
-internal typealias ReadState<State> = () -> State
-internal typealias Dispatch<Action> = (Action) -> Unit
-internal typealias KduxDisposable = () -> Unit
-internal typealias Middleware<State, Input, Output> = (Input, ReadState<State?>) -> (Dispatch<Output>) -> KduxDisposable
 
 interface KduxSource<T> {
     fun subscribe(ioScheduler: Scheduler, uiScheduler: Scheduler, consumer: (T) -> Unit): KduxDisposable

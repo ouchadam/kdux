@@ -1,4 +1,4 @@
-package com.ouchadam.kdux
+package com.ouchadam.kdux.common
 
 class CompositeKduxDisposable: KduxDisposable {
 
