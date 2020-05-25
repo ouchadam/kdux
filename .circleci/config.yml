@@ -4,8 +4,6 @@ jobs:
     working_directory: ~/code
     docker:
       - image: circleci/android:api-29
-    environment:
-      JVM_OPTS: -Xmx3200m
     steps:
       - checkout
       - restore_cache:
@@ -13,10 +11,10 @@ jobs:
       - run:
           name: Build
           command: ./gradlew build
-       - save_cache:
-         paths:
-           - ~/.gradle
-         key: jars-{{ checksum "lib/build.gradle" }}
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "lib/build.gradle" }}
 
   publish:
     working_directory: ~/code
