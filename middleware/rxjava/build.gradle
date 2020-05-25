@@ -1,4 +1,4 @@
-applyLibraryModule(project)
+applyLibraryModule(project, 'kdux-middleware-rxjava-3')
 
 dependencies {
     implementation project(":common")

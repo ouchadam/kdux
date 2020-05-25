@@ -1,1 +1,1 @@
-applyLibraryModule(project)
+applyLibraryModule(project, 'kdux-common')

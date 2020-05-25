@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 
 typealias KduxCoroutineSource<T> = suspend () -> Flow<T>
-
 typealias CoroutineSourceFactory<State, Input, Output> = (ReadState<State?>, Input) -> KduxCoroutineSource<Output>
 
 fun <State, Input, Output> coroutineMiddleware(

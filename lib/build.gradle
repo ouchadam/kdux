@@ -1,4 +1,4 @@
-applyLibraryModule(project)
+applyLibraryModule(project, 'kdux')
 
 dependencies {
     implementation project(":common")

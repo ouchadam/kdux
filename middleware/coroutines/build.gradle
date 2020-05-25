@@ -1,4 +1,4 @@
-applyLibraryModule(project)
+applyLibraryModule(project, 'kdux-middleware-coroutines')
 
 dependencies {
     implementation project(":common")
