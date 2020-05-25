@@ -63,8 +63,8 @@ val store = Store.create(reducer, middleware)
 ```kotlin
 val factory = { readState: ReadState<String?>, action: String ->
     when (action) {
-        "ACTION_START" -> Observable.just("async-result").toKdux()
-        else -> Completable.complete().toKdux()
+        "ACTION_START" -> Single.just("async-result").toKdux()
+        else -> Completable.error(IllegalStateException()).toKdux()
     }
 }
 
