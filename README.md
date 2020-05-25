@@ -77,3 +77,13 @@ val middleware = rxMiddleware(
 val store = Store.create(reducer, middleware)
 ```
 
+
+#### Clean up
+
+`store.post(action)` returns a `KduxDisposable` which can be invoked in order to clean up references/resources
+
+```
+val disposables = CompositeKduxDisposable()
+disposables += store.post("ACTION")
+dispables.clear()
+```
