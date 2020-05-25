@@ -47,8 +47,6 @@ store.post("ACTION_START")
 
 ##### Middleware can be chained together via `combineMiddleware`
 
-chained `middleware` 
-
 ```kotlin
 val middleware = combineMiddleware(
     fooMiddleware,
