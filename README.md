@@ -5,13 +5,7 @@
 
 A kotlin implementation of [redux](https://redux.js.org/)
 
-Differences:
-
-- dispatching within a `middleware` does not reiterate through other middlewares
-- `middleware`must return a clean up function, `KduxDisposable`
-- sub-reducers are not currently implemented
-
-```
+```gradle
 implementation 'com.github.ouchadam:kdux:$version'
 
 //optional
@@ -93,7 +87,7 @@ private suspend fun backgroundWork() = withContext(Dispatchers.IO) { "async-resu
 
 val factory = { readState: ReadState<String?>, action: String ->
     when (action) {
-        "ACTION_START" -> suspend { backgroundWork() }
+        "ACTION_START" -> ::backgroundWork
         else -> suspend { throw IllegalStateException() }
     }
 }
@@ -112,3 +106,9 @@ val disposables = CompositeKduxDisposable()
 disposables += store.post("ACTION")
 dispables.clear()
 ```
+
+#### Redux differences
+
+- dispatching within a `middleware` does not reiterate through other middlewares
+- `middleware` must return a clean up function, `KduxDisposable`
+- `middleware` are chained by type
