@@ -1,5 +1,8 @@
 # kdux
 
+[ ![Download](https://api.bintray.com/packages/ouchadam/maven/kdux/images/download.svg) ](https://bintray.com/ouchadam/maven/kdux/_latestVersion) [![CircleCI](https://circleci.com/gh/ouchadam/kdux.svg?style=svg)](https://circleci.com/gh/ouchadam/kdux)
+
+
 A kotlin implementation of [redux](https://redux.js.org/)
 
 Differences:
@@ -7,6 +10,14 @@ Differences:
 - dispatching within a `middleware` does not reiterate through other middlewares
 - `middleware`must return a clean up function, `KduxDisposable`
 - sub-reducers are not currently implemented
+
+```
+implementation 'com.github.ouchadam:kdux:$version'
+
+//optional
+implementation 'com.github.ouchadam:kdux-middleware-rxjava-3:$version'
+implementation 'com.github.ouchadam:kdux-middleware-coroutines:$version'
+```
 
 ## Usage
 
