@@ -1,103 +1,149 @@
 # kdux
 
+[ ![Download](https://api.bintray.com/packages/ouchadam/maven/kdux/images/download.svg) ](https://bintray.com/ouchadam/maven/kdux/_latestVersion) [![CircleCI](https://circleci.com/gh/ouchadam/kdux.svg?style=svg)](https://circleci.com/gh/ouchadam/kdux)
+
+
 A kotlin implementation of [redux](https://redux.js.org/)
 
-Differences:
+```gradle
+implementation "com.github.ouchadam:kdux:$version"
 
-- dispatching within a `middleware` does not reiterate through other middlewares
-- `middleware`must return a clean up function, `KduxDisposable`
-- sub-reducers are not currently implemented
+//optional
+implementation "com.github.ouchadam:kdux-middleware-rxjava-3:$version"
+implementation "com.github.ouchadam:kdux-middleware-coroutines:$version"
+```
 
-## Usage
+_tl;dr_
 
-`State` & `Action` can be any types, in these examples they are `String` for simplicity.
+```kotlin
+val store = createStore(
+    reducer = combineReducers(reducer1, reducer2),
+    initialState = Pair(View1State.Loading, View2State.Loading),
+    enhancer = applyMiddleware(
+        loggerMiddleware(),
+        asyncMiddleware(),
+    )
+)
+```
 
 #### Simple usage
 
 ```kotlin
-val reducer = { action: String, currentState: String?  ->
-  if (action == "ACTION_START") "hello world" else currentState
+enum class MyAction: KduxAction { START }
+
+val reducer = { currentState: String, action: MyAction  ->
+    when(action) {
+        MyAction.START -> "hello world"
+    }
 }
 
-val store = Store.create(reducer)
-store.observe { println(it) }
-store.post("ACTION_START")
+val store = createStore(reducer, initialState = "empty")
+store.subscribe { println(store.getState()) }
+store.dispatch(MyAction.START)
 ```
 
+#### Combining reducers
+```kotlin
+enum class MyAction: KduxAction { START }
+enum class OtherActions: KduxAction { INCREMENT }
+
+val reducer1 = { currentState: String, action: MyAction  ->
+    when(action) {
+        MyAction.START -> "hello world"
+    }
+}
+
+val reducer2 = { currentState: Int, action: OtherActions  ->
+    when(action) {
+        OtherActions.INCREMENT -> currentState + 1
+    }
+}
+
+val reducer = combineReducers(reducer1, reducer2)
+val store = createStore(reducer, initialState = Pair("empty", -1))
+store.subscribe { println(store.getState()) }
+store.dispatch(MyAction.START)
+store.dispatch(OtherActions.INCREMENT)
+```
 
 #### Middleware
 
 ```kotlin
-val logger = { action: String, readState: ReadState<String?> ->
-    { dispatch: Dispatch<String> ->
-        println("current state -> ${readState()}"
-        dispatch(action)
-        println("next state -> ${readState()}"
-        SYNC_MIDDLEWARE
+fun <State> loggerMiddleware(): Middleware<State> = { store ->
+    { dispatch ->
+        { action ->
+            println("action: $action")
+            val next = dispatch(action)
+            println("state: ${store.getState()}")
+            next
+        }
     }
 }
 
-...
-val store = Store.create(reducer, logger)
-store.post("ACTION_START")
-
-// current state -> null
-// next state -> hello world
+val store = createStore(
+    reducer = combineReducers(reducer, reducer2),
+    initialState = Pair(View1State.Loading, View2State.Loading),
+    enhancer = applyMiddleware(loggerMiddleware())
+)
 ```
 
-##### Middleware can be chained together via `combineMiddleware`
+#### Async middleware
+
+##### build your own
 
 ```kotlin
-val middleware = combineMiddleware(
-    fooMiddleware,
-    logger
-)
-
-val store = Store.create(reducer, middleware)
+fun threadMiddleware(): Middleware<State> = { store ->
+    { dispatch ->
+        { action ->
+            action.ensureType<UiAction>()
+            when (action) {
+                UiAction.FetchContent -> {
+                    thread { 
+                        dispatch(AsyncAction.AsyncContent("result")) 
+                    }.run { { interrupt() } }
+                }
+            }
+        }
+    }
+}
 ```
+
+##### or use a built-in helper
 
 ##### rxjava-middleware
 
 ```kotlin
-val factory = { readState: ReadState<String?>, action: String ->
+private fun middleware() = rxMiddleware<State, MyAction> { dispatch, action ->
     when (action) {
-        "ACTION_START" -> Single.just("async-result").toKdux()
-        else -> Completable.error(IllegalStateException()).toKdux()
+        MyAction.START -> {
+            val source = Single.just(AsyncAction.Result("payload"))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+
+            source.subscribe { result -> dispatch(result) }
+        }
     }
 }
-
-val middleware = rxMiddleware(
-    factory, 
-    ioScheduler = Schedulers.io(), 
-    reducerScheduler = AndroidSchedulers.mainThread()
-)
-
-val store = Store.create(reducer, middleware)
 ```
 
 ##### coroutines-middleware
 
 ```kotlin
-private suspend fun backgroundWork() = withContext(Dispatchers.IO) { "async-result" }
-
-val factory = { readState: ReadState<String?>, action: String ->
+private fun middleware() = coroutineMiddleware<ActivityState, UiAction>(GlobalScope) { dispatch, action ->
     when (action) {
-        "ACTION_START" -> suspend { backgroundWork() }
-        else -> suspend { throw IllegalStateException() }
+        UiAction.FetchContent -> {
+            withContext(Dispatchers.IO) {
+                dispatch(AsyncAction.Result("payload"))
+            }
+        }
     }
 }
-
-val middleware = coroutineMiddleware(factory, scope = GlobalScope)
-
-val store = Store.create(reducer, middleware)
 ```
 
 #### Clean up
 
-`store.post(action)` returns a `KduxDisposable` which can be invoked in order to clean up references/resources
-
 ```kotlin
 val disposables = CompositeKduxDisposable()
-disposables += store.post("ACTION")
+disposables += store.dispatch(MyAction.START)
 dispables.clear()
 ```
