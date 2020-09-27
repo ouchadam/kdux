@@ -3,17 +3,9 @@ package com.github.ouchadam.kdux
 import android.app.Activity
 import android.os.Bundle
 import com.github.ouchadam.kdux.common.*
-import com.github.ouchadam.kdux.middleware.rxMiddleware
 import com.github.ouchadam.kdux.setup.*
 import coroutineMiddleware
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.*
-import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
 
 typealias ActivityState = Pair<View1State, View2State>
 
@@ -50,33 +42,9 @@ class MainActivity : Activity() {
             initialState = Pair(View1State.Loading, View2State.Loading),
             enhancer = applyMiddleware(
                 loggerMiddleware(),
-                asyncMiddleware2(),
+                asyncMiddleware(),
             )
         )
-    }
-
-
-    enum class MyAction : KduxAction { START }
-    enum class OtherActions : KduxAction { INCREMENT }
-
-    fun example() {
-        val reducer1 = { currentState: String, action: MyAction ->
-            when (action) {
-                MyAction.START -> "hello world"
-            }
-        }
-
-        val reducer2 = { currentState: Int, action: OtherActions ->
-            when (action) {
-                OtherActions.INCREMENT -> currentState + 1
-            }
-        }
-
-        val reducer = combineReducers(reducer1, reducer2)
-        val store = createStore(reducer, initialState = Pair("empty", -1))
-        store.subscribe { println(store.getState()) }
-        store.dispatch(MyAction.START)
-        store.dispatch(OtherActions.INCREMENT)
     }
 
     override fun onStart() {
@@ -97,28 +65,7 @@ class MainActivity : Activity() {
     }
 }
 
-private fun asyncMiddleware(): Middleware<ActivityState> = rxMiddleware<ActivityState, UiAction> { dispatch, action ->
-    when (action) {
-        UiAction.FetchContent -> {
-            CompositeDisposable().apply {
-                val source1 = Observable.just(AsyncAction.AsyncContent("result") as AsyncAction)
-                    .delay(2, TimeUnit.SECONDS)
-                    .startWithItem(AsyncAction.AsyncLoading)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                add(source1.subscribe { result -> dispatch(result) })
-
-                val source2 = Single.just(AsyncAction2.AsyncContent("other result"))
-                    .delay(3, TimeUnit.SECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                add(source2.subscribe { result -> dispatch(result) })
-            }
-        }
-    }
-}
-
-private fun asyncMiddleware2() = coroutineMiddleware<ActivityState, UiAction>(GlobalScope) { dispatch, action ->
+private fun asyncMiddleware() = coroutineMiddleware<ActivityState, UiAction>(GlobalScope) { dispatch, action ->
     when (action) {
         UiAction.FetchContent -> {
             withContext(Dispatchers.IO) {
