@@ -1,5 +1,5 @@
 applyLibraryModule(project, 'kdux')
 
 dependencies {
-    implementation project(":common")
+    api  project(":common")
 }

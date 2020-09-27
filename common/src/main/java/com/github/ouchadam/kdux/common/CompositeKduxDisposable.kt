@@ -1,6 +1,6 @@
 package com.github.ouchadam.kdux.common
 
-class CompositeKduxDisposable: KduxDisposable {
+class CompositeKduxDisposable : KduxDisposable {
 
     private val disposables = mutableListOf<KduxDisposable>()
 
@@ -20,5 +20,3 @@ class CompositeKduxDisposable: KduxDisposable {
 operator fun CompositeKduxDisposable.plusAssign(disposable: KduxDisposable) {
     add(disposable)
 }
-
-fun KduxDisposable.addTo(compositeDisposable: CompositeKduxDisposable): KduxDisposable = this.apply { compositeDisposable.add(this) }
